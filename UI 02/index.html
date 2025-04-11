@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预算管理系统 | PowerBudget</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="power-apps-container">
+        <!-- Header -->
+        <header class="power-header">
+            <div class="brand">
+                <i class="bi bi-bar-chart-fill logo-icon"></i>
+                <span>PowerBudget</span>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <span id="userName">财务部 · 张经理</span>
+                <button class="power-button logout-btn" onclick="logout()">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="power-nav">
+            <button class="nav-item active" data-page="budget-goals">
+                <i class="bi bi-bullseye"></i>
+                <span>预算目标</span>
+            </button>
+            <button class="nav-item" data-page="budget-entry">
+                <i class="bi bi-pencil-square"></i>
+                <span>预算填报</span>
+            </button>
+            <button class="nav-item" data-page="analysis">
+                <i class="bi bi-graph-up"></i>
+                <span>分析页面</span>
+            </button>
+            <button class="nav-item" data-page="approval">
+                <i class="bi bi-check2-circle"></i>
+                <span>审批流程</span>
+            </button>
+            <div class="nav-date">
+                当前日期: <span>2025-03-21</span>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="power-content">
+            <!-- Budget Goals Page -->
+            <section id="budget-goals" class="page active">
+                <div class="page-header">
+                    <h1>部门KPI评估</h1>
+                    <p class="text-muted">根据战略目标评估KPI可实现性</p>
+                </div>
+                
+                <div class="container-fluid p-0">
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <div class="power-gallery">
+                                <div class="gallery-header">
+                                    <h2><i class="bi bi-list-check"></i> KPI列表</h2>
+                                    <span class="kpi-count">共 3 项</span>
+                                </div>
+                                <div class="gallery-items" id="kpiGallery">
+                                    <!-- KPI items will be dynamically added here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <div class="power-form">
+                                <h3><i class="bi bi-sliders"></i> KPI详情</h3>
+                                <div class="form-group">
+                                    <label>可实现性评分 (0-12)</label>
+                                    <div class="score-input">
+                                        <input type="range" min="0" max="12" class="form-control" id="kpiScore">
+                                        <div class="score-display" id="scoreValue">6</div>
+                                    </div>
+                                    <div class="score-legend">
+                                        <span class="score-low">存在障碍 (0-8)</span>
+                                        <span class="score-high">完全可实现 (9-12)</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>原因说明</label>
+                                    <textarea class="form-control" id="kpiReason" rows="3" placeholder="如果评分为0-8，请解释原因..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>改进措施</label>
+                                    <textarea class="form-control" id="kpiMeasures" rows="3" placeholder="如果评分为0-8，请提出改进措施..."></textarea>
+                                </div>
+                                <button class="power-button primary">
+                                    <i class="bi bi-check-lg"></i> 保存评估
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Budget Entry Page -->
+            <section id="budget-entry" class="page">
+                <div class="page-header">
+                    <h1>预算填报</h1>
+                    <p class="text-muted">基于作业绩效管理法进行预算编制</p>
+                </div>
+                
+                <div class="power-split-view">
+                    <div class="side-panel">
+                        <div class="power-gallery">
+                            <div class="gallery-header">
+                                <h2><i class="bi bi-collection"></i> 作业列表</h2>
+                                <div class="header-actions">
+                                    <span class="activity-count">共 7 项</span>
+                                    <button class="add-btn" onclick="openAddOperation()">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="gallery-items" id="activityGallery">
+                                <!-- Activity items will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="main-panel">
+                        <div class="power-form">
+                            <h3><i class="bi bi-calculator"></i> 预算详情</h3>
+                            <div class="selected-activity">
+                                <span id="activityName">成本控制</span>
+                            </div>
+                            
+                            <div class="power-datatable" id="budgetTable">
+                                <!-- Budget data table will be dynamically added here -->
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="bi bi-file-text"></i> 业务计划</label>
+                                <textarea class="form-control" rows="4" placeholder="请输入业务计划详情..."></textarea>
+                            </div>
+                            
+                            <div class="button-group">
+                                <button class="power-button">
+                                    <i class="bi bi-x-lg"></i> 无需填报
+                                </button>
+                                <button class="power-button primary">
+                                    <i class="bi bi-save"></i> 保存填报
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analysis Page -->
+            <section id="analysis" class="page">
+                <div class="page-header">
+                    <h1>预算分析</h1>
+                    <p class="text-muted">审查预算数据并进行可视化分析</p>
+                </div>
+                
+                <div class="power-analysis">
+                    <div class="analysis-header">
+                        <h2><i class="bi bi-pie-chart"></i> 预算分析</h2>
+                        <div class="button-group">
+                            <button class="power-button" onclick="exportPDF()">
+                                <i class="bi bi-file-pdf"></i> 导出PDF
+                            </button>
+                            <button class="power-button" onclick="exportExcel()">
+                                <i class="bi bi-file-excel"></i> 导出Excel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-content">
+                        <div class="chart-container">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h4>预算趋势分析</h4>
+                                </div>
+                                <div class="chart" id="budgetTrendChart">
+                                    <!-- Chart will be rendered here -->
+                                </div>
+                            </div>
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h4>成本构成分析</h4>
+                                </div>
+                                <div class="chart" id="costBreakdownChart">
+                                    <!-- Chart will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="power-form mt-4">
+                            <h3><i class="bi bi-chat-left-text"></i> 部门说明</h3>
+                            <div class="form-group">
+                                <textarea class="form-control" rows="4" placeholder="请输入预算说明..."></textarea>
+                            </div>
+                            
+                            <div class="button-group">
+                                <button class="power-button" onclick="returnToEdit()">
+                                    <i class="bi bi-arrow-left"></i> 返回修改
+                                </button>
+                                <button class="power-button primary" onclick="submitBudget()">
+                                    <i class="bi bi-send"></i> 确认提交
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Approval Workflow Page -->
+            <section id="approval" class="page">
+                <div class="page-header">
+                    <h1>审批流程</h1>
+                    <p class="text-muted">跟踪预算审批进度及评论反馈</p>
+                </div>
+                
+                <div class="power-approval">
+                    <div class="approval-header">
+                        <h2><i class="bi bi-check2-all"></i> 审批状态</h2>
+                        <div class="status-badge pending">审批中</div>
+                    </div>
+                    
+                    <div class="approval-content">
+                        <div class="workflow-container">
+                            <div class="workflow-steps">
+                                <div class="step completed">
+                                    <div class="step-icon"><i class="bi bi-check-lg"></i></div>
+                                    <div class="step-content">
+                                        <h4>部门提交</h4>
+                                        <p>2025-03-21 10:30</p>
+                                        <div class="step-meta">
+                                            <span class="step-user">张经理</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="step active">
+                                    <div class="step-icon"><i class="bi bi-hourglass-split"></i></div>
+                                    <div class="step-content">
+                                        <h4>经理审核</h4>
+                                        <p>处理中</p>
+                                        <div class="step-meta">
+                                            <span class="step-user">李总监</span>
+                                            <span class="step-due">截止: 2025-03-24</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-icon"><i class="bi bi-circle"></i></div>
+                                    <div class="step-content">
+                                        <h4>财务总监审核</h4>
+                                        <p>待处理</p>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="step-icon"><i class="bi bi-circle"></i></div>
+                                    <div class="step-content">
+                                        <h4>预算委员会审批</h4>
+                                        <p>待处理</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="power-form mt-4">
+                                <h3><i class="bi bi-chat-dots"></i> 审批评论</h3>
+                                <div class="comments-container">
+                                    <div class="comment">
+                                        <div class="comment-header">
+                                            <div class="comment-author">
+                                                <i class="bi bi-person-circle"></i>
+                                                张经理
+                                            </div>
+                                            <span class="comment-time">2025-03-21 11:30</span>
+                                        </div>
+                                        <div class="comment-content">
+                                            请补充说明成本控制措施的具体实施方案。
+                                        </div>
+                                        <div class="comment-actions">
+                                            <button class="link-btn">回复</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <textarea class="form-control" rows="3" placeholder="添加评论..."></textarea>
+                                </div>
+                                
+                                <div class="button-group">
+                                    <button class="power-button">
+                                        <i class="bi bi-x-circle"></i> 驳回
+                                    </button>
+                                    <button class="power-button primary">
+                                        <i class="bi bi-check-circle"></i> 通过
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Add Operation Modal -->
+            <div class="power-modal" id="addOperationModal">
+                <div class="modal-overlay"></div>
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3>新增作业</h3>
+                        <button class="close-btn" onclick="closeModal()">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="tab-container">
+                            <div class="tab-nav">
+                                <button class="tab-btn active" data-tab="operations">作业</button>
+                                <button class="tab-btn" data-tab="indicators">收益指标</button>
+                                <button class="tab-btn" data-tab="costs">成本要素</button>
+                            </div>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="operations">
+                                    <div class="form-group">
+                                        <label>作业名称</label>
+                                        <input type="text" class="form-control" placeholder="输入作业名称">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>作业说明</label>
+                                        <textarea class="form-control" rows="3" placeholder="输入作业说明"></textarea>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="indicators">
+                                    <div class="form-group">
+                                        <label>指标名称</label>
+                                        <input type="text" class="form-control" placeholder="输入指标名称">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>单位</label>
+                                        <input type="text" class="form-control" placeholder="输入单位">
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="costs">
+                                    <div class="form-group">
+                                        <label>成本要素名称</label>
+                                        <input type="text" class="form-control" placeholder="输入成本要素名称">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>单位</label>
+                                        <input type="text" class="form-control" placeholder="输入单位">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="power-button" onclick="closeModal()">取消</button>
+                        <button class="power-button primary">保存</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="scripts/main.js"></script>
+    <script>
+        // 显示登录成功通知
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                showNotification('登录成功，欢迎使用预算管理系统', 'success');
+            }, 800);
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预算填报</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 自定义配置 Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        light: '#F3F4F6',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen">
+    <div class="flex flex-col md:flex-row h-full">
+        <!-- 左侧作业列表 -->
+        <div class="w-full md:w-64 bg-white shadow-sm p-4 md:h-[calc(100vh-2rem)] overflow-y-auto">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">作业列表</h2>
+            <ul id="activity-list" class="space-y-1">
+                <li>
+                    <a href="#" class="activity-item flex items-center justify-between p-3 rounded-md hover:bg-gray-50 active" data-activity-id="1">
+                        <span class="truncate">市场调研</span>
+                        <span class="status-badge status-badge-saved">已保存</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="activity-item flex items-center justify-between p-3 rounded-md hover:bg-gray-50" data-activity-id="2">
+                        <span class="truncate">产品推广</span>
+                        <span class="status-badge status-badge-unsaved">未保存</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="activity-item flex items-center justify-between p-3 rounded-md hover:bg-gray-50" data-activity-id="3">
+                        <span class="truncate">客户维护</span>
+                        <span class="status-badge status-badge-unsaved">未保存</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="activity-item flex items-center justify-between p-3 rounded-md hover:bg-gray-50" data-activity-id="4">
+                        <span class="truncate">销售培训</span>
+                        <span class="status-badge status-badge-unsaved">未保存</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="activity-item flex items-center justify-between p-3 rounded-md hover:bg-gray-50" data-activity-id="5">
+                        <span class="truncate">竞品分析</span>
+                        <span class="status-badge status-badge-unsaved">未保存</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="mt-6 space-y-3">
+                <button id="add-activity-btn" class="btn btn-outline w-full">
+                    <i class="fas fa-plus mr-2"></i>新增作业
+                </button>
+                <button id="add-indicator-btn" class="btn btn-outline w-full">
+                    <i class="fas fa-chart-line mr-2"></i>新增收益指标
+                </button>
+                <button id="add-cost-btn" class="btn btn-outline w-full">
+                    <i class="fas fa-money-bill-wave mr-2"></i>新增成本要素
+                </button>
+            </div>
+        </div>
+
+        <!-- 右侧填报区域 -->
+        <div id="budget-input-container" class="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div class="bg-white shadow-sm rounded-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-6" id="activity-title">市场调研</h2>
+
+                <!-- 收益指标部分 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">收益指标</h3>
+                    <div class="overflow-x-auto">
+                        <table class="budget-table">
+                            <thead>
+                                <tr>
+                                    <th>指标名称</th>
+                                    <th>单位</th>
+                                    <th>前年实际</th>
+                                    <th>去年计划</th>
+                                    <th>去年实际</th>
+                                    <th>明年预算</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>市场调研报告数量</td>
+                                    <td>份</td>
+                                    <td>12</td>
+                                    <td>15</td>
+                                    <td>14</td>
+                                    <td>
+                                        <input type="number" class="input text-center indicator-input" value="18" min="0" data-indicator-id="1">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>调研覆盖客户数</td>
+                                    <td>家</td>
+                                    <td>120</td>
+                                    <td>150</td>
+                                    <td>145</td>
+                                    <td>
+                                        <input type="number" class="input text-center indicator-input" value="180" min="0" data-indicator-id="2">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>新发现客户需求点</td>
+                                    <td>个</td>
+                                    <td>25</td>
+                                    <td>30</td>
+                                    <td>32</td>
+                                    <td>
+                                        <input type="number" class="input text-center indicator-input" value="40" min="0" data-indicator-id="3">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 业务计划部分 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">业务计划</h3>
+                    <div class="rounded-md border border-gray-300">
+                        <div class="bg-gray-50 px-4 py-2 border-b border-gray-300">
+                            <div class="flex items-center space-x-2">
+                                <button class="p-1 text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button class="p-1 text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button class="p-1 text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-underline"></i>
+                                </button>
+                                <div class="border-r border-gray-300 h-6"></div>
+                                <button class="p-1 text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-list-ul"></i>
+                                </button>
+                                <button class="p-1 text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-list-ol"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="business-plan" class="w-full p-4 border-0 focus:ring-0 resize-none" rows="6" placeholder="请输入业务计划内容...">1. 扩大市场调研范围，增加对三线城市的覆盖
+2. 优化调研方法，采用线上与线下相结合的模式
+3. 引入AI辅助分析工具，提高数据处理效率
+4. 建立客户需求数据库，形成长期跟踪机制
+5. 与产品部门建立双周同步会议，确保调研成果及时转化</textarea>
+                    </div>
+                </div>
+
+                <!-- 成本要素部分 -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">成本要素</h3>
+                    <div class="overflow-x-auto">
+                        <table class="budget-table">
+                            <thead>
+                                <tr>
+                                    <th>要素名称</th>
+                                    <th>单位</th>
+                                    <th>前年实际</th>
+                                    <th>去年计划</th>
+                                    <th>去年实际</th>
+                                    <th>明年预算</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>人工成本</td>
+                                    <td>万元</td>
+                                    <td>120</td>
+                                    <td>135</td>
+                                    <td>138</td>
+                                    <td>
+                                        <input type="number" class="input text-center cost-input" value="150" min="0" data-cost-id="1">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>差旅费</td>
+                                    <td>万元</td>
+                                    <td>35</td>
+                                    <td>40</td>
+                                    <td>38</td>
+                                    <td>
+                                        <input type="number" class="input text-center cost-input" value="45" min="0" data-cost-id="2">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>调研工具订阅</td>
+                                    <td>万元</td>
+                                    <td>18</td>
+                                    <td>20</td>
+                                    <td>22</td>
+                                    <td>
+                                        <input type="number" class="input text-center cost-input" value="30" min="0" data-cost-id="3">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>数据购买</td>
+                                    <td>万元</td>
+                                    <td>25</td>
+                                    <td>30</td>
+                                    <td>28</td>
+                                    <td>
+                                        <input type="number" class="input text-center cost-input" value="35" min="0" data-cost-id="4">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="flex justify-between">
+                    <button id="no-need-btn" class="btn btn-outline">
+                        <i class="fas fa-ban mr-2"></i>无需填报
+                    </button>
+                    <div class="space-x-3">
+                        <button id="save-btn" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i>保存填报
+                        </button>
+                        <button id="next-page-btn" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right mr-2"></i>跳转下一页
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 作业管理弹窗 -->
+    <div id="activity-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-900" id="modal-title">新增作业</h3>
+                    <button id="close-modal-btn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="flex">
+                    <!-- 左侧作业列表 -->
+                    <div class="w-1/3 border-r pr-4">
+                        <h4 class="text-lg font-medium text-gray-900 mb-3">现有作业</h4>
+                        <ul class="space-y-2">
+                            <li class="p-2 bg-gray-100 rounded">市场调研</li>
+                            <li class="p-2 hover:bg-gray-100 rounded">产品推广</li>
+                            <li class="p-2 hover:bg-gray-100 rounded">客户维护</li>
+                            <li class="p-2 hover:bg-gray-100 rounded">销售培训</li>
+                            <li class="p-2 hover:bg-gray-100 rounded">竞品分析</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 右侧表单 -->
+                    <div class="w-2/3 pl-4">
+                        <div class="flex space-x-2 mb-4">
+                            <button id="tab-activity" class="py-2 px-4 rounded-t-lg border-b-2 border-primary text-primary font-medium">新增作业</button>
+                            <button id="tab-indicator" class="py-2 px-4 rounded-t-lg border-b-2 border-transparent hover:text-primary">新增收益指标</button>
+                            <button id="tab-cost" class="py-2 px-4 rounded-t-lg border-b-2 border-transparent hover:text-primary">新增成本要素</button>
+                        </div>
+                        
+                        <!-- 新增作业表单 -->
+                        <div id="form-activity" class="tab-content">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">作业名称</label>
+                                <input type="text" class="input" placeholder="请输入作业名称">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">作业说明</label>
+                                <textarea class="input resize-none" rows="4" placeholder="请输入作业说明..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- 新增收益指标表单 -->
+                        <div id="form-indicator" class="tab-content hidden">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">指标名称</label>
+                                <input type="text" class="input" placeholder="请输入指标名称">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">单位</label>
+                                <input type="text" class="input" placeholder="请输入单位">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">说明</label>
+                                <textarea class="input resize-none" rows="3" placeholder="请输入指标说明..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- 新增成本要素表单 -->
+                        <div id="form-cost" class="tab-content hidden">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">要素名称</label>
+                                <input type="text" class="input" placeholder="请输入要素名称">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">单位</label>
+                                <input type="text" class="input" placeholder="请输入单位">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">说明</label>
+                                <textarea class="input resize-none" rows="3" placeholder="请输入要素说明..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button id="reset-form-btn" class="btn btn-outline">
+                    <i class="fas fa-redo mr-2"></i>重新填写
+                </button>
+                <button id="save-modal-btn" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取元素
+            const activityItems = document.querySelectorAll('.activity-item');
+            const activityTitle = document.getElementById('activity-title');
+            const saveBtn = document.getElementById('save-btn');
+            const noNeedBtn = document.getElementById('no-need-btn');
+            const nextPageBtn = document.getElementById('next-page-btn');
+            
+            // 作业管理相关元素
+            const addActivityBtn = document.getElementById('add-activity-btn');
+            const addIndicatorBtn = document.getElementById('add-indicator-btn');
+            const addCostBtn = document.getElementById('add-cost-btn');
+            const activityModal = document.getElementById('activity-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const tabActivity = document.getElementById('tab-activity');
+            const tabIndicator = document.getElementById('tab-indicator');
+            const tabCost = document.getElementById('tab-cost');
+            const formActivity = document.getElementById('form-activity');
+            const formIndicator = document.getElementById('form-indicator');
+            const formCost = document.getElementById('form-cost');
+            const resetFormBtn = document.getElementById('reset-form-btn');
+            const saveModalBtn = document.getElementById('save-modal-btn');
+            
+            // 切换活动作业
+            activityItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 更新活动样式
+                    activityItems.forEach(actItem => actItem.classList.remove('active', 'bg-gray-100'));
+                    this.classList.add('active', 'bg-gray-100');
+                    
+                    // 更新标题
+                    activityTitle.textContent = this.querySelector('span').textContent;
+                    
+                    // 可以在这里加载对应作业的数据
+                    // loadActivityData(this.getAttribute('data-activity-id'));
+                });
+            });
+            
+            // 保存按钮点击事件
+            saveBtn.addEventListener('click', function() {
+                const activeItem = document.querySelector('.activity-item.active');
+                if (!activeItem) return;
+                
+                // 获取当前作业状态标签
+                const statusBadge = activeItem.querySelector('.status-badge');
+                
+                // 更改状态为已保存
+                statusBadge.className = 'status-badge status-badge-saved';
+                statusBadge.textContent = '已保存';
+                
+                // 显示成功消息
+                window.parent.postMessage({
+                    action: 'notification',
+                    message: `作业"${activityTitle.textContent}"已保存`,
+                    type: 'success'
+                }, '*');
+                
+                // 这里可以添加保存数据到服务器的代码
+                // saveActivityData(activeItem.getAttribute('data-activity-id'), collectFormData());
+            });
+            
+            // 无需填报按钮点击事件
+            noNeedBtn.addEventListener('click', function() {
+                const activeItem = document.querySelector('.activity-item.active');
+                if (!activeItem) return;
+                
+                // 获取当前作业状态标签
+                const statusBadge = activeItem.querySelector('.status-badge');
+                
+                // 更改状态为已保存
+                statusBadge.className = 'status-badge status-badge-saved';
+                statusBadge.textContent = '已保存';
+                
+                // 显示消息
+                window.parent.postMessage({
+                    action: 'notification',
+                    message: `作业"${activityTitle.textContent}"已标记为无需填报`,
+                    type: 'info'
+                }, '*');
+            });
+            
+            // 跳转下一页按钮点击事件
+            nextPageBtn.addEventListener('click', function() {
+                // 检查所有作业是否都已保存
+                const unsavedItems = document.querySelectorAll('.status-badge-unsaved');
+                
+                if (unsavedItems.length > 0) {
+                    // 显示错误消息
+                    window.parent.postMessage({
+                        action: 'notification',
+                        message: `还有 ${unsavedItems.length} 项作业未保存，请先完成所有作业`,
+                        type: 'error'
+                    }, '*');
+                    return;
+                }
+                
+                // 导航到下一页
+                window.parent.postMessage({
+                    action: 'navigate',
+                    page: 'budget-analysis'
+                }, '*');
+            });
+            
+            // 打开作业管理弹窗
+            function openModal(title, tabToShow) {
+                modalTitle.textContent = title;
+                activityModal.classList.remove('hidden');
+                
+                // 切换到对应标签
+                if (tabToShow === 'activity') {
+                    tabActivity.click();
+                } else if (tabToShow === 'indicator') {
+                    tabIndicator.click();
+                } else if (tabToShow === 'cost') {
+                    tabCost.click();
+                }
+            }
+            
+            // 关闭作业管理弹窗
+            function closeModal() {
+                activityModal.classList.add('hidden');
+            }
+            
+            // 添加作业按钮点击事件
+            addActivityBtn.addEventListener('click', function() {
+                openModal('新增作业', 'activity');
+            });
+            
+            // 添加收益指标按钮点击事件
+            addIndicatorBtn.addEventListener('click', function() {
+                openModal('新增收益指标', 'indicator');
+            });
+            
+            // 添加成本要素按钮点击事件
+            addCostBtn.addEventListener('click', function() {
+                openModal('新增成本要素', 'cost');
+            });
+            
+            // 关闭弹窗按钮
+            closeModalBtn.addEventListener('click', closeModal);
+            
+            // 标签切换
+            tabActivity.addEventListener('click', function() {
+                tabActivity.classList.add('border-primary', 'text-primary');
+                tabIndicator.classList.remove('border-primary', 'text-primary');
+                tabCost.classList.remove('border-primary', 'text-primary');
+                
+                formActivity.classList.remove('hidden');
+                formIndicator.classList.add('hidden');
+                formCost.classList.add('hidden');
+                
+                modalTitle.textContent = '新增作业';
+            });
+            
+            tabIndicator.addEventListener('click', function() {
+                tabActivity.classList.remove('border-primary', 'text-primary');
+                tabIndicator.classList.add('border-primary', 'text-primary');
+                tabCost.classList.remove('border-primary', 'text-primary');
+                
+                formActivity.classList.add('hidden');
+                formIndicator.classList.remove('hidden');
+                formCost.classList.add('hidden');
+                
+                modalTitle.textContent = '新增收益指标';
+            });
+            
+            tabCost.addEventListener('click', function() {
+                tabActivity.classList.remove('border-primary', 'text-primary');
+                tabIndicator.classList.remove('border-primary', 'text-primary');
+                tabCost.classList.add('border-primary', 'text-primary');
+                
+                formActivity.classList.add('hidden');
+                formIndicator.classList.add('hidden');
+                formCost.classList.remove('hidden');
+                
+                modalTitle.textContent = '新增成本要素';
+            });
+            
+            // 重置表单按钮
+            resetFormBtn.addEventListener('click', function() {
+                const activeForm = document.querySelector('.tab-content:not(.hidden)');
+                const inputs = activeForm.querySelectorAll('input, textarea');
+                
+                inputs.forEach(input => {
+                    input.value = '';
+                });
+            });
+            
+            // 保存弹窗按钮
+            saveModalBtn.addEventListener('click', function() {
+                // 这里可以添加保存数据的代码
+                // const activeForm = document.querySelector('.tab-content:not(.hidden)');
+                // const formData = collectModalFormData(activeForm);
+                
+                // 显示成功消息
+                window.parent.postMessage({
+                    action: 'notification',
+                    message: `${modalTitle.textContent}成功`,
+                    type: 'success'
+                }, '*');
+                
+                // 关闭弹窗
+                closeModal();
+            });
+            
+            // 点击弹窗外部关闭
+            activityModal.addEventListener('click', function(e) {
+                if (e.target === activityModal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

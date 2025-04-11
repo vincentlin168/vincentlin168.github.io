@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预算目标</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 自定义配置 Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        light: '#F3F4F6',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white shadow-sm rounded-lg p-6">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">预算目标确认</h1>
+                <p class="text-gray-600">请对每项KPI是否可以完成进行确认打分（0-12分）。分数区间含义：
+                    <span class="text-green-600 font-medium">9-12分</span>：完全可实现；
+                    <span class="text-yellow-600 font-medium">5-8分</span>：存在障碍，可以争取；
+                    <span class="text-red-600 font-medium">0-4分</span>：业务逻辑错误，基本无法实现。
+                </p>
+                <div class="mt-2 text-sm text-gray-500">
+                    <p>注意：9-12分可以选择说明原因，0-8分必须说明原因和改进措施。</p>
+                </div>
+            </div>
+
+            <!-- KPI列表 -->
+            <div class="space-y-8" id="kpi-list">
+                <!-- KPI项 1 -->
+                <div class="kpi-item card p-5">
+                    <div class="flex flex-col sm:flex-row justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">市场份额增长率</h3>
+                            <p class="text-sm text-gray-500">全年达成市场份额增长10%的目标</p>
+                        </div>
+                        <div class="flex items-center mt-2 sm:mt-0">
+                            <span class="text-sm text-gray-600 mr-2">当前打分：</span>
+                            <span class="text-primary font-medium score-value">9</span>
+                            <span class="text-gray-600 ml-1">/12</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <input type="range" min="0" max="12" value="9" class="slider kpi-slider" data-kpi-id="1">
+                        <div class="slider-marks">
+                            <span>0</span>
+                            <span>4</span>
+                            <span>8</span>
+                            <span>12</span>
+                        </div>
+                        <div class="mt-2 flex justify-between text-xs text-gray-500">
+                            <span class="text-red-600">无法实现</span>
+                            <span class="text-yellow-600">存在障碍</span>
+                            <span class="text-green-600">完全可实现</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 feedback-container hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            请说明原因和改进措施
+                        </label>
+                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 resize-none transition feedback-input" rows="3" placeholder="请说明原因和改进措施..."></textarea>
+                    </div>
+                </div>
+
+                <!-- KPI项 2 -->
+                <div class="kpi-item card p-5">
+                    <div class="flex flex-col sm:flex-row justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">新客户转化率</h3>
+                            <p class="text-sm text-gray-500">潜在客户转化率提升至35%</p>
+                        </div>
+                        <div class="flex items-center mt-2 sm:mt-0">
+                            <span class="text-sm text-gray-600 mr-2">当前打分：</span>
+                            <span class="text-primary font-medium score-value">7</span>
+                            <span class="text-gray-600 ml-1">/12</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <input type="range" min="0" max="12" value="7" class="slider kpi-slider" data-kpi-id="2">
+                        <div class="slider-marks">
+                            <span>0</span>
+                            <span>4</span>
+                            <span>8</span>
+                            <span>12</span>
+                        </div>
+                        <div class="mt-2 flex justify-between text-xs text-gray-500">
+                            <span class="text-red-600">无法实现</span>
+                            <span class="text-yellow-600">存在障碍</span>
+                            <span class="text-green-600">完全可实现</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 feedback-container">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            请说明原因和改进措施
+                        </label>
+                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 resize-none transition feedback-input" rows="3" placeholder="请说明原因和改进措施...">当前市场环境下，35%的转化率有一定挑战。计划通过优化销售漏斗和增强销售团队培训来提升能力。</textarea>
+                    </div>
+                </div>
+
+                <!-- KPI项 3 -->
+                <div class="kpi-item card p-5">
+                    <div class="flex flex-col sm:flex-row justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">员工培训覆盖率</h3>
+                            <p class="text-sm text-gray-500">部门内全员完成核心能力培训</p>
+                        </div>
+                        <div class="flex items-center mt-2 sm:mt-0">
+                            <span class="text-sm text-gray-600 mr-2">当前打分：</span>
+                            <span class="text-primary font-medium score-value">10</span>
+                            <span class="text-gray-600 ml-1">/12</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <input type="range" min="0" max="12" value="10" class="slider kpi-slider" data-kpi-id="3">
+                        <div class="slider-marks">
+                            <span>0</span>
+                            <span>4</span>
+                            <span>8</span>
+                            <span>12</span>
+                        </div>
+                        <div class="mt-2 flex justify-between text-xs text-gray-500">
+                            <span class="text-red-600">无法实现</span>
+                            <span class="text-yellow-600">存在障碍</span>
+                            <span class="text-green-600">完全可实现</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 feedback-container hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            请说明原因（可选）
+                        </label>
+                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 resize-none transition feedback-input" rows="3" placeholder="请说明原因（可选）..."></textarea>
+                    </div>
+                </div>
+
+                <!-- KPI项 4 -->
+                <div class="kpi-item card p-5">
+                    <div class="flex flex-col sm:flex-row justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">成本控制率</h3>
+                            <p class="text-sm text-gray-500">部门总成本相比去年降低8%</p>
+                        </div>
+                        <div class="flex items-center mt-2 sm:mt-0">
+                            <span class="text-sm text-gray-600 mr-2">当前打分：</span>
+                            <span class="text-primary font-medium score-value">3</span>
+                            <span class="text-gray-600 ml-1">/12</span>
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <input type="range" min="0" max="12" value="3" class="slider kpi-slider" data-kpi-id="4">
+                        <div class="slider-marks">
+                            <span>0</span>
+                            <span>4</span>
+                            <span>8</span>
+                            <span>12</span>
+                        </div>
+                        <div class="mt-2 flex justify-between text-xs text-gray-500">
+                            <span class="text-red-600">无法实现</span>
+                            <span class="text-yellow-600">存在障碍</span>
+                            <span class="text-green-600">完全可实现</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 feedback-container">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            请说明原因和改进措施
+                        </label>
+                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 resize-none transition feedback-input" rows="3" placeholder="请说明原因和改进措施...">由于市场拓展需求，8%的降低幅度过大且与扩张策略冲突。建议调整至3-5%的降幅，或将成本控制与收入增长挂钩评估。</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="mt-8 flex justify-end">
+                <button id="save-btn" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>保存并继续
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有KPI滑块
+            const sliders = document.querySelectorAll('.kpi-slider');
+            
+            // 为每个滑块添加事件监听
+            sliders.forEach(slider => {
+                const kpiItem = slider.closest('.kpi-item');
+                const scoreValue = kpiItem.querySelector('.score-value');
+                const feedbackContainer = kpiItem.querySelector('.feedback-container');
+                const feedbackInput = kpiItem.querySelector('.feedback-input');
+                const feedbackLabel = feedbackContainer.querySelector('label');
+                
+                // 初始化反馈区域
+                updateFeedbackVisibility(parseInt(slider.value), feedbackContainer, feedbackLabel);
+                
+                // 监听滑块变化
+                slider.addEventListener('input', function() {
+                    const value = parseInt(this.value);
+                    scoreValue.textContent = value;
+                    
+                    // 根据分数区间更新反馈区域
+                    updateFeedbackVisibility(value, feedbackContainer, feedbackLabel);
+                });
+            });
+            
+            // 保存按钮点击事件
+            document.getElementById('save-btn').addEventListener('click', function() {
+                // 验证所有必填反馈
+                let isValid = true;
+                const feedbackContainers = document.querySelectorAll('.feedback-container:not(.hidden)');
+                
+                feedbackContainers.forEach(container => {
+                    const textarea = container.querySelector('textarea');
+                    const label = container.querySelector('label');
+                    
+                    if (label.textContent.includes('改进措施') && textarea.value.trim() === '') {
+                        textarea.classList.add('border-red-500');
+                        isValid = false;
+                    } else {
+                        textarea.classList.remove('border-red-500');
+                    }
+                });
+                
+                if (!isValid) {
+                    // 显示错误消息
+                    window.parent.postMessage({
+                        action: 'notification',
+                        message: '请为分数在0-8区间的KPI填写原因和改进措施',
+                        type: 'error'
+                    }, '*');
+                    return;
+                }
+                
+                // 收集数据
+                const kpiData = [];
+                sliders.forEach(slider => {
+                    const kpiItem = slider.closest('.kpi-item');
+                    const kpiId = slider.getAttribute('data-kpi-id');
+                    const score = parseInt(slider.value);
+                    const feedbackContainer = kpiItem.querySelector('.feedback-container');
+                    const feedback = feedbackContainer.classList.contains('hidden') ? '' : kpiItem.querySelector('.feedback-input').value;
+                    
+                    kpiData.push({
+                        kpiId,
+                        score,
+                        feedback
+                    });
+                });
+                
+                // 模拟保存到服务器
+                console.log('KPI数据已保存:', kpiData);
+                
+                // 显示成功消息
+                window.parent.postMessage({
+                    action: 'notification',
+                    message: '预算目标确认已保存',
+                    type: 'success'
+                }, '*');
+                
+                // 导航到下一页
+                setTimeout(() => {
+                    window.parent.postMessage({
+                        action: 'navigate',
+                        page: 'budget-input'
+                    }, '*');
+                }, 1000);
+            });
+            
+            // 更新反馈区域可见性和标签
+            function updateFeedbackVisibility(value, container, label) {
+                if (value >= 0 && value <= 8) {
+                    container.classList.remove('hidden');
+                    label.textContent = '请说明原因和改进措施';
+                    container.querySelector('textarea').setAttribute('placeholder', '请说明原因和改进措施...');
+                } else if (value >= 9 && value <= 12) {
+                    container.classList.remove('hidden');
+                    label.textContent = '请说明原因（可选）';
+                    container.querySelector('textarea').setAttribute('placeholder', '请说明原因（可选）...');
+                    // 对于9-12分，可以选择隐藏反馈区域，这里保留显示但标记为可选
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

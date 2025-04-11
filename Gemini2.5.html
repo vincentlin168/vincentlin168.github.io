@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预算管理 App 原型</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* 自定义样式 */
+        .page-content {
+            padding-top: 1rem; /* 内容区域与导航栏间距 */
+            padding-bottom: 1rem;
+            /* display: none; 由 d-none 类控制 */
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .status-pending { background-color: #f8d7da; } /* 浅红色 */
+        .status-saved { background-color: #d1e7dd; } /* 浅绿色 */
+
+        /* 模拟富文本编辑器 */
+        .rich-text-editor-placeholder {
+            border: 1px solid #ced4da;
+            min-height: 150px;
+            padding: 0.5rem;
+            background-color: #fff;
+            border-radius: 0.375rem;
+            color: #6c757d; /* Placeholder text color */
+        }
+
+         /* 审批流程图示简化 */
+        .approval-step {
+            text-align: center;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .approval-step:hover {
+             background-color: #f8f9fa;
+        }
+        .approval-step.active {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+         .approval-step .status-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+         /* Popup 样式 (简单模拟) */
+         #add-item-popup {
+             position: fixed; /* Or absolute relative to a container */
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+             width: 80%;
+             max-width: 900px; /* Max width */
+             background-color: white;
+             border: 1px solid #ccc;
+             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+             z-index: 1050; /* Ensure it's above other content */
+             padding: 1.5rem;
+             border-radius: 0.5rem;
+             max-height: 80vh; /* Max height */
+             overflow-y: auto; /* Scroll if content overflows */
+         }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-dollar-sign me-2"></i>预算管理</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-kpi" href="#" onclick="showPage('kpi-page', this)"><i class="fas fa-bullseye me-1"></i>KPI确认</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-budget-entry" href="#" onclick="showPage('budget-entry-page', this)"><i class="fas fa-edit me-1"></i>预算填报</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-analysis" href="#" onclick="showPage('analysis-page', this)"><i class="fas fa-chart-line me-1"></i>预算分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-approval" href="#" onclick="showPage('approval-page', this)"><i class="fas fa-tasks me-1"></i>审批流程</a>
+                    </li>
+                </ul>
+                 <span class="navbar-text">
+                    欢迎, 部门负责人! <i class="fas fa-user ms-2"></i>
+                 </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+
+        <div id="kpi-page" class="page-content">
+            <h2 class="mb-4"><i class="fas fa-bullseye me-2"></i>部门 KPI 确认</h2>
+            <div class="card mb-3">
+                <div class="card-header">
+                    KPI 1: 销售额增长率
+                </div>
+                <div class="card-body">
+                    <p class="card-text">目标：年度销售额增长达到 15%</p>
+                    <div class="mb-3">
+                        <label class="form-label">可实现性打分 (0-12):</label>
+                        <select class="form-select kpi-score" data-target-reason="reason-kpi1">
+                            <option value="-1" selected disabled>请选择分数</option>
+                            <optgroup label="完全可实现 (9-12)">
+                                <option value="12">12</option>
+                                <option value="11">11</option>
+                                <option value="10">10</option>
+                                <option value="9">9</option>
+                            </optgroup>
+                            <optgroup label="存在障碍，可以争取 (5-8)">
+                                <option value="8">8</option>
+                                <option value="7">7</option>
+                                <option value="6">6</option>
+                                <option value="5">5</option>
+                             </optgroup>
+                             <optgroup label="基本无法实现 (0-4)">
+                                 <option value="4">4</option>
+                                 <option value="3">3</option>
+                                 <option value="2">2</option>
+                                 <option value="1">1</option>
+                                 <option value="0">0</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="mb-3 reason-container d-none" id="reason-kpi1">
+                        <label for="reason-text-kpi1" class="form-label">原因和措施 (得分 ≤ 8 分时必填):</label>
+                        <textarea class="form-control" id="reason-text-kpi1" rows="3" required></textarea>
+                    </div>
+                </div>
+            </div>
+             <div class="card mb-3">
+                <div class="card-header">
+                    KPI 2: 客户满意度
+                </div>
+                <div class="card-body">
+                    <p class="card-text">目标：客户满意度评分达到 4.5/5.0</p>
+                    <div class="mb-3">
+                        <label class="form-label">可实现性打分 (0-12):</label>
+                        <select class="form-select kpi-score" data-target-reason="reason-kpi2">
+                            <option value="-1" selected disabled>请选择分数</option>
+                             <optgroup label="完全可实现 (9-12)">
+                                <option value="12">12</option>
+                                <option value="11">11</option>
+                                <option value="10">10</option>
+                                <option value="9">9</option>
+                            </optgroup>
+                            <optgroup label="存在障碍，可以争取 (5-8)">
+                                <option value="8">8</option>
+                                <option value="7">7</option>
+                                <option value="6">6</option>
+                                <option value="5">5</option>
+                             </optgroup>
+                             <optgroup label="基本无法实现 (0-4)">
+                                 <option value="4">4</option>
+                                 <option value="3">3</option>
+                                 <option value="2">2</option>
+                                 <option value="1">1</option>
+                                 <option value="0">0</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="mb-3 reason-container d-none" id="reason-kpi2">
+                        <label for="reason-text-kpi2" class="form-label">原因和措施 (得分 ≤ 8 分时必填):</label>
+                        <textarea class="form-control" id="reason-text-kpi2" rows="3" required></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 text-end">
+                 <button class="btn btn-primary" onclick="showPage('budget-entry-page', document.getElementById('nav-budget-entry'))">确认完毕，开始填报预算 <i class="fas fa-arrow-right ms-1"></i></button>
+            </div>
+        </div>
+
+        <div id="budget-entry-page" class="page-content d-none">
+             <h2 class="mb-4"><i class="fas fa-edit me-2"></i>预算填报</h2>
+             <div class="row">
+                 <div class="col-md-3">
+                     <div class="card">
+                         <div class="card-header">
+                             部门作业列表
+                         </div>
+                         <div class="list-group list-group-flush" id="job-list-gallery">
+                             <a href="#" class="list-group-item list-group-item-action" data-job-id="job1" data-job-name="核心产品研发" onclick="selectJob(this)">
+                                 核心产品研发 <span class="status-indicator status-pending float-end" id="status-job1"></span>
+                             </a>
+                             <a href="#" class="list-group-item list-group-item-action" data-job-id="job2" data-job-name="市场推广活动" onclick="selectJob(this)">
+                                 市场推广活动 <span class="status-indicator status-pending float-end" id="status-job2"></span>
+                             </a>
+                             <a href="#" class="list-group-item list-group-item-action" data-job-id="job3" data-job-name="客户关系维护" onclick="selectJob(this)">
+                                 客户关系维护 <span class="status-indicator status-pending float-end" id="status-job3"></span>
+                             </a>
+                             <a href="#" class="list-group-item list-group-item-action" data-job-id="job4" data-job-name="内部培训" onclick="selectJob(this)">
+                                 内部培训 <span class="status-indicator status-pending float-end" id="status-job4"></span>
+                             </a>
+                             </div>
+                         <div class="card-body border-top">
+                             <div class="d-grid gap-2">
+                                <button class="btn btn-outline-success btn-sm" onclick="showPopup('add-item-popup', 'tab-add-job')"><i class="fas fa-plus me-1"></i> 新添作业</button>
+                                <button class="btn btn-outline-info btn-sm" onclick="showPopup('add-item-popup', 'tab-add-revenue')"><i class="fas fa-plus me-1"></i> 新添收益指标</button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="showPopup('add-item-popup', 'tab-add-cost')"><i class="fas fa-plus me-1"></i> 新添成本要素</button>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header" id="budget-form-title">
+                            请从左侧选择一项作业进行填报
+                        </div>
+                        <div class="card-body" id="budget-form-content" style="display: none;"> <h5 class="mb-3">历史数据与预算 (收益指标)</h5>
+                             <div class="table-responsive mb-4">
+                                 <table class="table table-bordered table-sm table-striped">
+                                     <thead>
+                                         <tr>
+                                             <th>收益指标</th>
+                                             <th>前年实际</th>
+                                             <th>去年计划</th>
+                                             <th>去年实际</th>
+                                             <th>明年预算</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody id="revenue-table-body">
+                                         <tr>
+                                             <td>新用户注册数</td>
+                                             <td>1,000</td>
+                                             <td>1,200</td>
+                                             <td>1,150</td>
+                                             <td><input type="number" class="form-control form-control-sm" placeholder="填写预算"></td>
+                                         </tr>
+                                         <tr>
+                                             <td>活跃用户数</td>
+                                             <td>800</td>
+                                             <td>1,000</td>
+                                             <td>950</td>
+                                             <td><input type="number" class="form-control form-control-sm" placeholder="填写预算"></td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+                             </div>
+
+                             <h5 class="mb-3">业务计划 (明年)</h5>
+                             <div class="mb-4">
+                                 <div class="rich-text-editor-placeholder" contenteditable="true">
+                                    请在此处填写详细的业务计划，说明如何达成明年的预算目标...
+                                 </div>
+                                 </div>
+
+                            <h5 class="mb-3">历史数据与预算 (成本要素)</h5>
+                             <div class="table-responsive mb-4">
+                                 <table class="table table-bordered table-sm table-striped">
+                                     <thead>
+                                         <tr>
+                                             <th>成本要素</th>
+                                             <th>前年实际</th>
+                                             <th>去年计划</th>
+                                             <th>去年实际</th>
+                                             <th>明年预算</th>
+                                         </tr>
+                                     </thead>
+                                      <tbody id="cost-table-body">
+                                         <tr>
+                                             <td>人工成本</td>
+                                             <td>50,000</td>
+                                             <td>60,000</td>
+                                             <td>58,000</td>
+                                             <td><input type="number" class="form-control form-control-sm" placeholder="填写预算"></td>
+                                         </tr>
+                                         <tr>
+                                             <td>差旅费</td>
+                                             <td>5,000</td>
+                                             <td>8,000</td>
+                                             <td>7,500</td>
+                                             <td><input type="number" class="form-control form-control-sm" placeholder="填写预算"></td>
+                                         </tr>
+                                         <tr>
+                                             <td>市场营销费用</td>
+                                             <td>10,000</td>
+                                             <td>15,000</td>
+                                             <td>14,000</td>
+                                             <td><input type="number" class="form-control form-control-sm" placeholder="填写预算"></td>
+                                         </tr>
+                                     </tbody>
+                                 </table>
+                             </div>
+
+                             <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-3">
+                                 <button class="btn btn-secondary" onclick="markAsNotApplicable()"><i class="fas fa-times me-1"></i> 无需填报</button>
+                                 <button class="btn btn-success" onclick="saveBudgetData()"><i class="fas fa-save me-1"></i> 保存填报</button>
+                                 <button class="btn btn-primary" onclick="submitForAnalysis()"><i class="fas fa-paper-plane me-1"></i> 提交分析</button>
+                             </div>
+                        </div>
+                    </div>
+                 </div>
+             </div>
+        </div>
+
+        <div id="analysis-page" class="page-content d-none">
+            <h2 class="mb-4"><i class="fas fa-chart-line me-2"></i>预算分析</h2>
+            <div class="card mb-4">
+                <div class="card-header">历史数据比较 (示例)</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>成本要素趋势 (图表占位)</h5>
+                            <img src="https://via.placeholder.com/400x200.png?text=成本趋势图" class="img-fluid" alt="成本趋势图占位">
+                        </div>
+                         <div class="col-md-6">
+                            <h5>收益指标对比 (表格)</h5>
+                             <table class="table table-sm table-bordered">
+                                 <thead>
+                                    <tr><th>指标</th><th>去年实际</th><th>明年预算</th><th>差异%</th></tr>
+                                 </thead>
+                                 <tbody>
+                                     <tr><td>新用户注册数</td><td>1,150</td><td>1,500</td><td class="text-success">+30.4%</td></tr>
+                                     <tr><td>人工成本</td><td>58,000</td><td>65,000</td><td class="text-danger">+12.1%</td></tr>
+                                     </tbody>
+                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="card mb-4">
+                <div class="card-header">业务计划汇总描述 (只读)</div>
+                <div class="card-body bg-light">
+                    <p><strong>作业：核心产品研发</strong></p>
+                    <p>为了达成明年预算，我们将重点投入 AI 功能的研发，预计需要增加 2 名高级工程师...</p>
+                    <hr>
+                     <p><strong>作业：市场推广活动</strong></p>
+                    <p>计划在明年 Q2 和 Q4 开展大型线上推广活动，并加强社交媒体运营...</p>
+                    </div>
+            </div>
+
+             <div class="d-flex justify-content-between mt-4">
+                 <button class="btn btn-secondary" onclick="showPage('budget-entry-page', document.getElementById('nav-budget-entry'))"><i class="fas fa-arrow-left me-1"></i> 返回修改</button>
+                 <div>
+                    <button class="btn btn-info me-2" onclick="alert('导出功能待实现')"><i class="fas fa-download me-1"></i> 导出 (PDF/Excel)</button>
+                    <button class="btn btn-primary" onclick="confirmSubmission()"><i class="fas fa-check-circle me-1"></i> 确认提交</button>
+                 </div>
+             </div>
+        </div>
+
+        <div id="approval-page" class="page-content d-none">
+             <h2 class="mb-4"><i class="fas fa-tasks me-2"></i>审批流程</h2>
+             <div class="card mb-4">
+                 <div class="card-header">审批流程说明</div>
+                 <div class="card-body">
+                     <p>预算提交后，将按照以下流程进行审批：部门经理审核 -> 财务部复核 -> 预算委员会终审。任何驳回将退回至填报人修改。</p>
+                 </div>
+             </div>
+
+             <h5 class="mb-3">审批进展</h5>
+             <div class="row mb-4" id="approval-steps-gallery">
+                 <div class="col-md-4">
+                     <div class="approval-step" data-step-id="step1" data-comments="部门经理初步意见：成本中的【差旅费】预算偏高，请说明具体差旅计划。" onclick="showApprovalComments(this)">
+                         <div class="status-icon text-success"><i class="fas fa-user-check"></i></div>
+                         <h6>部门经理审核</h6>
+                         <small class="text-muted">状态：<span class="badge bg-success">已审核</span></small><br>
+                         <small class="text-muted">时间：2025-03-25</small>
+                     </div>
+                 </div>
+                 <div class="col-md-4">
+                     <div class="approval-step active" data-step-id="step2" data-comments="财务部复核意见：收益指标【新用户注册数】增长预测依据不足，请补充市场分析报告。人工成本预算合理。" onclick="showApprovalComments(this)">
+                         <div class="status-icon text-warning"><i class="fas fa-file-invoice-dollar"></i></div>
+                         <h6>财务部复核</h6>
+                         <small class="text-muted">状态：<span class="badge bg-warning text-dark">审核中</span></small><br>
+                         <small class="text-muted">时间：进行中...</small>
+                     </div>
+                 </div>
+                  <div class="col-md-4">
+                     <div class="approval-step" data-step-id="step3" data-comments="等待财务部复核完成。" onclick="showApprovalComments(this)">
+                         <div class="status-icon text-secondary"><i class="fas fa-users"></i></div>
+                         <h6>预算委员会终审</h6>
+                         <small class="text-muted">状态：<span class="badge bg-secondary">未开始</span></small><br>
+                         <small class="text-muted">时间：---</small>
+                     </div>
+                 </div>
+             </div>
+
+             <div class="card">
+                 <div class="card-header">审批意见</div>
+                 <div class="card-body">
+                     <textarea class="form-control" id="approval-comments-display" rows="4" readonly>请点击上方审批节点查看意见。</textarea>
+                 </div>
+             </div>
+        </div>
+
+        <div id="add-item-popup" class="d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 id="popup-title">添加新项目</h4>
+                 <button type="button" class="btn-close" aria-label="Close" onclick="hidePopup('add-item-popup')"></button>
+            </div>
+
+            <ul class="nav nav-tabs mb-3" id="addItemTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-add-job" data-bs-toggle="tab" data-bs-target="#add-job-content" type="button" role="tab" aria-controls="add-job-content" aria-selected="true"><i class="fas fa-briefcase me-1"></i> 新增作业</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-add-revenue" data-bs-toggle="tab" data-bs-target="#add-revenue-content" type="button" role="tab" aria-controls="add-revenue-content" aria-selected="false"><i class="fas fa-chart-bar me-1"></i> 新增收益指标</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-add-cost" data-bs-toggle="tab" data-bs-target="#add-cost-content" type="button" role="tab" aria-controls="add-cost-content" aria-selected="false"><i class="fas fa-tags me-1"></i> 新增成本要素</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="addItemTabContent">
+                <div class="tab-pane fade show active" id="add-job-content" role="tabpanel" aria-labelledby="tab-add-job">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>现有作业列表 (只读)</h6>
+                            <ul class="list-group list-group-sm">
+                                <li class="list-group-item">核心产品研发</li>
+                                <li class="list-group-item">市场推广活动</li>
+                                <li class="list-group-item">客户关系维护</li>
+                                <li class="list-group-item">内部培训</li>
+                                </ul>
+                        </div>
+                        <div class="col-md-8">
+                             <h6>新增作业信息</h6>
+                            <form onsubmit="return false;"> <div class="mb-3">
+                                    <label for="new-job-name" class="form-label">作业名称</label>
+                                    <input type="text" class="form-control" id="new-job-name" required>
+                                </div>
+                                 <div class="mb-3">
+                                    <label for="new-job-desc" class="form-label">作业说明</label>
+                                    <textarea class="form-control" id="new-job-desc" rows="3"></textarea>
+                                </div>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="reset" class="btn btn-outline-secondary">重新填写</button>
+                                    <button type="button" class="btn btn-primary" onclick="saveNewItem('job')">保存作业</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="add-revenue-content" role="tabpanel" aria-labelledby="tab-add-revenue">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>现有收益指标 (只读)</h6>
+                            <ul class="list-group list-group-sm">
+                                <li class="list-group-item">新用户注册数</li>
+                                <li class="list-group-item">活跃用户数</li>
+                                </ul>
+                        </div>
+                        <div class="col-md-8">
+                             <h6>新增收益指标信息</h6>
+                            <form onsubmit="return false;">
+                                <div class="mb-3">
+                                    <label for="new-revenue-name" class="form-label">指标名称</label>
+                                    <input type="text" class="form-control" id="new-revenue-name" required>
+                                </div>
+                                 <div class="mb-3">
+                                    <label for="new-revenue-unit" class="form-label">单位</label>
+                                    <input type="text" class="form-control" id="new-revenue-unit" placeholder="例如：个, %, 元">
+                                </div>
+                                 <div class="d-flex justify-content-end gap-2">
+                                    <button type="reset" class="btn btn-outline-secondary">重新填写</button>
+                                    <button type="button" class="btn btn-primary" onclick="saveNewItem('revenue')">保存收益指标</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="add-cost-content" role="tabpanel" aria-labelledby="tab-add-cost">
+                    <div class="row">
+                        <div class="col-md-4">
+                             <h6>现有成本要素 (只读)</h6>
+                            <ul class="list-group list-group-sm">
+                                <li class="list-group-item">人工成本</li>
+                                <li class="list-group-item">差旅费</li>
+                                <li class="list-group-item">市场营销费用</li>
+                                </ul>
+                        </div>
+                        <div class="col-md-8">
+                            <h6>新增成本要素信息</h6>
+                             <form onsubmit="return false;">
+                                <div class="mb-3">
+                                    <label for="new-cost-name" class="form-label">要素名称</label>
+                                    <input type="text" class="form-control" id="new-cost-name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new-cost-category" class="form-label">成本类别</label>
+                                    <select class="form-select" id="new-cost-category">
+                                        <option selected>选择类别...</option>
+                                        <option value="fixed">固定成本</option>
+                                        <option value="variable">变动成本</option>
+                                        <option value="direct">直接成本</option>
+                                        <option value="indirect">间接成本</option>
+                                     </select>
+                                </div>
+                                 <div class="d-flex justify-content-end gap-2">
+                                    <button type="reset" class="btn btn-outline-secondary">重新填写</button>
+                                    <button type="button" class="btn btn-primary" onclick="saveNewItem('cost')">保存成本要素</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        let selectedJobId = null; // Track selected job ID in budget entry
+
+        // --- Page Navigation ---
+        function showPage(pageId, clickedNavLink = null) {
+            console.log("Showing page:", pageId);
+            // Hide all page content divs
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(page => {
+                page.classList.add('d-none');
+            });
+
+            // Show the selected page
+            const selectedPage = document.getElementById(pageId);
+            if (selectedPage) {
+                selectedPage.classList.remove('d-none');
+            } else {
+                 console.error("Page not found:", pageId);
+                 return; // Exit if page doesn't exist
+            }
+
+            // Update navigation link active state
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                 // Set aria-current to false or remove attribute
+                 link.removeAttribute('aria-current');
+            });
+            if (clickedNavLink) {
+                 clickedNavLink.classList.add('active');
+                 // Set aria-current for accessibility
+                 clickedNavLink.setAttribute('aria-current', 'page');
+            } else {
+                 // Try to find link by pageId if not provided
+                 const correspondingLink = document.getElementById(`nav-${pageId.replace('-page','')}`);
+                 if(correspondingLink) {
+                      correspondingLink.classList.add('active');
+                      correspondingLink.setAttribute('aria-current', 'page');
+                 }
+            }
+
+            // Special handling for popup - ensure it's hidden when navigating pages
+            hidePopup('add-item-popup');
+        }
+
+         // --- KPI Page Logic ---
+         document.querySelectorAll('.kpi-score').forEach(selectElement => {
+            selectElement.addEventListener('change', function() {
+                const score = parseInt(this.value, 10);
+                const reasonContainerId = this.getAttribute('data-target-reason');
+                const reasonContainer = document.getElementById(reasonContainerId);
+                const reasonTextarea = reasonContainer ? reasonContainer.querySelector('textarea') : null;
+
+                if (reasonContainer && reasonTextarea) {
+                    if (score >= 0 && score <= 8) {
+                        reasonContainer.classList.remove('d-none');
+                        reasonTextarea.required = true;
+                    } else {
+                        reasonContainer.classList.add('d-none');
+                        reasonTextarea.required = false;
+                    }
+                }
+            });
+        });
+
+        // --- Budget Entry Page Logic ---
+        function selectJob(jobElement) {
+            event.preventDefault(); // Prevent default anchor behavior
+            selectedJobId = jobElement.getAttribute('data-job-id');
+            const jobName = jobElement.getAttribute('data-job-name');
+
+            // Update form title
+            document.getElementById('budget-form-title').innerText = `预算填报: ${jobName}`;
+            // Show form content
+             document.getElementById('budget-form-content').style.display = 'block';
+
+            // Highlight selected job in the list
+            document.querySelectorAll('#job-list-gallery a').forEach(item => {
+                item.classList.remove('active');
+            });
+            jobElement.classList.add('active');
+
+            // TODO: In a real app, load actual data for the selected job
+            console.log("Selected Job:", selectedJobId, jobName);
+            // Placeholder: Maybe clear/reset form fields or load dummy data
+            document.getElementById('revenue-table-body').innerHTML = `
+                 <tr><td>${jobName} 收益指标 1</td><td>-</td><td>-</td><td>-</td><td><input type="number" class="form-control form-control-sm" placeholder="预算"></td></tr>
+                 <tr><td>${jobName} 收益指标 2</td><td>-</td><td>-</td><td>-</td><td><input type="number" class="form-control form-control-sm" placeholder="预算"></td></tr>
+            `;
+             document.getElementById('cost-table-body').innerHTML = `
+                 <tr><td>${jobName} 成本要素 1</td><td>-</td><td>-</td><td>-</td><td><input type="number" class="form-control form-control-sm" placeholder="预算"></td></tr>
+                 <tr><td>${jobName} 成本要素 2</td><td>-</td><td>-</td><td>-</td><td><input type="number" class="form-control form-control-sm" placeholder="预算"></td></tr>
+            `;
+        }
+
+        function saveBudgetData() {
+            if (!selectedJobId) {
+                 alert("请先从左侧选择一项作业！");
+                 return;
+            }
+            // Simulate saving
+            console.log("Simulating save for job:", selectedJobId);
+            const statusIndicator = document.getElementById(`status-${selectedJobId}`);
+            if (statusIndicator) {
+                statusIndicator.classList.remove('status-pending');
+                statusIndicator.classList.add('status-saved');
+            }
+            alert(`作业 [${selectedJobId}] 的预算已模拟保存！`);
+            // TODO: Add actual data saving logic here
+        }
+
+         function markAsNotApplicable() {
+              if (!selectedJobId) {
+                 alert("请先从左侧选择一项作业！");
+                 return;
+            }
+             console.log("Marking job as not applicable:", selectedJobId);
+             const statusIndicator = document.getElementById(`status-${selectedJobId}`);
+             if (statusIndicator) {
+                statusIndicator.classList.remove('status-pending');
+                statusIndicator.classList.add('status-saved'); // Or a different class/color for 'N/A'
+             }
+             alert(`作业 [${selectedJobId}] 已标记为无需填报！`);
+         }
+
+        function checkAllJobsSaved() {
+             const indicators = document.querySelectorAll('#job-list-gallery .status-indicator');
+             for (let indicator of indicators) {
+                 if (indicator.classList.contains('status-pending')) {
+                     // Find the job name associated with the pending indicator
+                     const jobLink = indicator.closest('a');
+                     const jobName = jobLink ? jobLink.getAttribute('data-job-name') : '未知作业';
+                     return jobName; // Return the name of the first unsaved job
+                 }
+             }
+             return null; // All saved or marked N/A
+        }
+
+        function submitForAnalysis() {
+             const unsavedJob = checkAllJobsSaved();
+             if (unsavedJob !== null) {
+                 alert(`请先完成或标记无需填报所有作业！\n未处理作业: ${unsavedJob}`);
+                 return;
+             }
+             // All jobs handled, proceed to analysis page
+             console.log("All jobs handled. Proceeding to analysis.");
+             showPage('analysis-page', document.getElementById('nav-analysis'));
+        }
+
+        // --- Analysis Page Logic ---
+         function confirmSubmission() {
+             if (confirm("确认提交预算进行审批吗？提交后将无法修改。")) {
+                 console.log("Budget submitted for approval.");
+                  // TODO: Add actual submission logic (e.g., API call, update status)
+                 showPage('approval-page', document.getElementById('nav-approval'));
+             }
+        }
+
+        // --- Approval Page Logic ---
+        function showApprovalComments(stepElement) {
+             const comments = stepElement.getAttribute('data-comments');
+             document.getElementById('approval-comments-display').value = comments || "无评论。";
+
+            // Highlight selected step
+            document.querySelectorAll('#approval-steps-gallery .approval-step').forEach(el => el.classList.remove('active'));
+             stepElement.classList.add('active');
+        }
+
+         // --- Popup Logic ---
+        function showPopup(popupId, tabIdToShow = null) {
+            const popupElement = document.getElementById(popupId);
+            if (popupElement) {
+                popupElement.classList.remove('d-none');
+                // Optionally activate a specific tab
+                if (tabIdToShow) {
+                    const tabButton = document.getElementById(tabIdToShow);
+                    if (tabButton) {
+                        const tab = new bootstrap.Tab(tabButton);
+                        tab.show();
+                    }
+                }
+            }
+         }
+
+         function hidePopup(popupId) {
+             const popupElement = document.getElementById(popupId);
+             if (popupElement) {
+                 popupElement.classList.add('d-none');
+             }
+         }
+
+         function saveNewItem(itemType) {
+              // Simulate saving new item
+              console.log(`Simulating save for new item of type: ${itemType}`);
+              // TODO: Add logic to read form data, validate, and potentially update UI lists (though this is complex for a prototype)
+              alert(`新的 [${itemType}] 信息已模拟保存！`);
+              hidePopup('add-item-popup'); // Close popup after saving
+         }
+
+
+        // --- Initial Setup ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show the initial page (KPI page)
+             showPage('kpi-page', document.getElementById('nav-kpi'));
+             // Hide popup initially just in case
+             hidePopup('add-item-popup');
+        });
+
+    </script>
+
+</body>
+</html>

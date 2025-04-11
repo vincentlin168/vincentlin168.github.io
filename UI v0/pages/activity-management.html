@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业管理</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 自定义配置 Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        light: '#F3F4F6',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.5em;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+        
+        .badge-blue {
+            background-color: #EFF6FF;
+            color: #3B82F6;
+        }
+        
+        .badge-green {
+            background-color: #ECFDF5;
+            color: #10B981;
+        }
+        
+        .badge-orange {
+            background-color: #FEF3C7;
+            color: #F59E0B;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">作业管理</h1>
+                <p class="text-gray-600">
+                    管理部门所有作业、收益指标和成本要素，进行创建、编辑和调整。
+                </p>
+            </div>
+            <button id="show-add-modal" class="bg-secondary hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-200 flex items-center">
+                <i class="fas fa-plus mr-2"></i>新增作业
+            </button>
+        </div>
+
+        <!-- 作业概览卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="card">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">作业总数</h3>
+                <div class="flex items-end space-x-2">
+                    <div class="text-3xl font-bold text-gray-900">12</div>
+                    <div class="text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>2
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">相比上年新增2个作业</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">收益指标</h3>
+                <div class="flex items-end space-x-2">
+                    <div class="text-3xl font-bold text-gray-900">28</div>
+                    <div class="text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>5
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">每个作业平均2.3个指标</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">成本要素</h3>
+                <div class="flex items-end space-x-2">
+                    <div class="text-3xl font-bold text-gray-900">35</div>
+                    <div class="text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>4
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">每个作业平均2.9个要素</p>
+            </div>
+            
+            <div class="card">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">预算总额</h3>
+                <div class="flex items-end space-x-2">
+                    <div class="text-3xl font-bold text-gray-900">1280</div>
+                    <div class="text-sm text-green-600">
+                        <i class="fas fa-arrow-up mr-1"></i>7.8%
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">单位：万元</p>
+            </div>
+        </div>
+
+        <!-- 筛选与搜索 -->
+        <div class="bg-white shadow-sm rounded-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">部门</label>
+                    <select class="w-full p-2 border border-gray-300 rounded-md">
+                        <option value="">全部部门</option>
+                        <option value="1">市场部</option>
+                        <option value="2">销售部</option>
+                        <option value="3">研发部</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">作业类型</label>
+                    <select class="w-full p-2 border border-gray-300 rounded-md">
+                        <option value="">全部类型</option>
+                        <option value="1">核心业务</option>
+                        <option value="2">支持业务</option>
+                        <option value="3">管理业务</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <select class="w-full p-2 border border-gray-300 rounded-md">
+                        <option value="">全部状态</option>
+                        <option value="1">已启用</option>
+                        <option value="2">已禁用</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">作业名称</label>
+                    <div class="relative">
+                        <input type="text" class="w-full p-2 pl-10 border border-gray-300 rounded-md" placeholder="搜索作业名称">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 作业列表 -->
+        <div class="bg-white shadow-sm rounded-lg overflow-hidden mb-8">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <input type="checkbox" class="rounded text-primary">
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            作业名称
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            所属部门
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            类型
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            状态
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            指标数
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            要素数
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            预算金额
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" class="rounded text-primary">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            市场调研
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            市场部
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span class="badge badge-blue">核心业务</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="badge badge-green">已启用</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            3
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            4
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            260万
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex space-x-2">
+                                <button class="text-gray-500 hover:text-gray-700"><i class="fas fa-edit"></i></button>
+                                <button class="text-gray-500 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" class="rounded text-primary">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            产品推广
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            市场部
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span class="badge badge-blue">核心业务</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="badge badge-green">已启用</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            4
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            5
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            320万
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex space-x-2">
+                                <button class="text-gray-500 hover:text-gray-700"><i class="fas fa-edit"></i></button>
+                                <button class="text-gray-500 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" class="rounded text-primary">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            客户维护
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            销售部
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span class="badge badge-orange">支持业务</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="badge badge-green">已启用</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            2
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            3
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            180万
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="flex space-x-2">
+                                <button class="text-gray-500 hover:text-gray-700"><i class="fas fa-edit"></i></button>
+                                <button class="text-gray-500 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 分页 -->
+        <div class="flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                显示 <span class="font-medium">1</span> 到 <span class="font-medium">3</span> 项，共 <span class="font-medium">12</span> 项
+            </div>
+            <div class="flex space-x-1">
+                <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                    上一页
+                </button>
+                <button class="px-3 py-1 rounded-md border border-gray-300 bg-accent text-white">
+                    1
+                </button>
+                <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                    2
+                </button>
+                <button class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                    下一页
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入新增作业模态框 -->
+    <script>
+        // 加载模态框内容
+        function loadModal() {
+            fetch('add-activity.html')
+                .then(response => response.text())
+                .then(html => {
+                    // 创建一个临时的div元素来解析HTML
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // 提取模态框内容
+                    const modalOverlay = doc.getElementById('modal-overlay');
+                    
+                    // 设置模态框为隐藏状态
+                    modalOverlay.style.display = 'none';
+                    
+                    // 将模态框添加到body
+                    document.body.appendChild(modalOverlay);
+                    
+                    // 绑定"新增作业"按钮点击事件
+                    document.getElementById('show-add-modal').addEventListener('click', () => {
+                        const modalElem = document.getElementById('modal-overlay');
+                        modalElem.style.display = 'flex';
+                    });
+                })
+                .catch(error => console.error('加载模态框失败:', error));
+        }
+        
+        // 页面加载完成后执行
+        window.addEventListener('load', loadModal);
+    </script>
+</body>
+</html> 

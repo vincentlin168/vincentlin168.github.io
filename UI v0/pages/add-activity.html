@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增作业</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 自定义配置 Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        light: '#F3F4F6',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 自定义样式 -->
+    <style>
+        /* 模态框动画 */
+        .modal-enter {
+            animation: modalIn 0.3s ease-out forwards;
+        }
+        
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* 选项卡样式 */
+        .tab-btn.active {
+            background-color: #E9730D; /* 选项卡激活颜色 */
+            color: white;
+        }
+        
+        /* 输入框聚焦样式 */
+        .custom-input:focus {
+            border-color: #F59E0B;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+        
+        /* 作业项样式 */
+        .activity-item:hover {
+            background-color: #E5E7EB;
+            cursor: pointer;
+        }
+    </style>
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- 模态框背景 -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <!-- 模态框容器 -->
+        <div id="modal-container" class="modal-enter w-[600px] bg-white rounded-lg shadow-xl overflow-hidden flex">
+            <!-- 左侧作业列表 -->
+            <div class="w-2/5 bg-light p-4 overflow-y-auto" style="max-height: 600px;">
+                <h2 class="text-lg font-bold text-dark mb-4">现有作业列表</h2>
+                
+                <div class="space-y-2">
+                    <div class="activity-item p-3 rounded-lg bg-white shadow-sm">
+                        <h3 class="font-medium text-dark">市场调研</h3>
+                        <p class="text-sm text-gray-500">收集市场信息和客户需求</p>
+                    </div>
+                    
+                    <div class="activity-item p-3 rounded-lg bg-white shadow-sm">
+                        <h3 class="font-medium text-dark">产品推广</h3>
+                        <p class="text-sm text-gray-500">通过多渠道推广产品和服务</p>
+                    </div>
+                    
+                    <div class="activity-item p-3 rounded-lg bg-white shadow-sm">
+                        <h3 class="font-medium text-dark">客户维护</h3>
+                        <p class="text-sm text-gray-500">维护客户关系和售后服务</p>
+                    </div>
+                    
+                    <div class="activity-item p-3 rounded-lg bg-white shadow-sm">
+                        <h3 class="font-medium text-dark">销售培训</h3>
+                        <p class="text-sm text-gray-500">对销售人员进行技能培训</p>
+                    </div>
+                    
+                    <div class="activity-item p-3 rounded-lg bg-white shadow-sm">
+                        <h3 class="font-medium text-dark">竞品分析</h3>
+                        <p class="text-sm text-gray-500">分析竞争对手产品和策略</p>
+                    </div>
+                    
+                    <div class="activity-item p-3 rounded-lg bg-white shadow-sm">
+                        <h3 class="font-medium text-dark">内容创作</h3>
+                        <p class="text-sm text-gray-500">创建营销内容和材料</p>
+                    </div>
+                    
+                    <div class="activity-item p-3 rounded-lg bg-white shadow-sm">
+                        <h3 class="font-medium text-dark">数据分析</h3>
+                        <p class="text-sm text-gray-500">分析市场数据和业绩指标</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧表单区域 -->
+            <div class="w-3/5 p-4">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-dark">新增作业</h2>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- 选项卡按钮 -->
+                <div class="flex space-x-2 mb-6">
+                    <button class="tab-btn active py-2 px-4 rounded-md text-sm font-medium" data-tab="tab-activity">
+                        新增作业
+                    </button>
+                    <button class="tab-btn py-2 px-4 rounded-md text-sm font-medium bg-gray-200" data-tab="tab-benefits">
+                        新增收益指标
+                    </button>
+                    <button class="tab-btn py-2 px-4 rounded-md text-sm font-medium bg-gray-200" data-tab="tab-costs">
+                        新增成本要素
+                    </button>
+                </div>
+                
+                <!-- 选项卡内容 -->
+                <div class="tab-content">
+                    <!-- 新增作业表单 -->
+                    <div id="tab-activity" class="tab-pane">
+                        <form id="activity-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">作业名称</label>
+                                <input type="text" class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none" placeholder="请输入作业名称">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">作业说明</label>
+                                <textarea class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none" rows="5" placeholder="请输入作业说明"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">所属部门</label>
+                                <select class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none">
+                                    <option value="">请选择部门</option>
+                                    <option value="1">市场部</option>
+                                    <option value="2">销售部</option>
+                                    <option value="3">研发部</option>
+                                    <option value="4">客服部</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- 新增收益指标表单 -->
+                    <div id="tab-benefits" class="tab-pane hidden">
+                        <form id="benefits-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">指标名称</label>
+                                <input type="text" class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none" placeholder="请输入指标名称">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">计量单位</label>
+                                <input type="text" class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none" placeholder="请输入计量单位">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">指标说明</label>
+                                <textarea class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none" rows="3" placeholder="请输入指标说明"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">所属作业</label>
+                                <select class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none">
+                                    <option value="">请选择作业</option>
+                                    <option value="1">市场调研</option>
+                                    <option value="2">产品推广</option>
+                                    <option value="3">客户维护</option>
+                                    <option value="4">销售培训</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- 新增成本要素表单 -->
+                    <div id="tab-costs" class="tab-pane hidden">
+                        <form id="costs-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">要素名称</label>
+                                <input type="text" class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none" placeholder="请输入要素名称">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">计量单位</label>
+                                <input type="text" class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none" placeholder="请输入计量单位">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">要素说明</label>
+                                <textarea class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none" rows="3" placeholder="请输入要素说明"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">所属作业</label>
+                                <select class="custom-input w-full p-2 border border-gray-300 rounded-md focus:outline-none">
+                                    <option value="">请选择作业</option>
+                                    <option value="1">市场调研</option>
+                                    <option value="2">产品推广</option>
+                                    <option value="3">客户维护</option>
+                                    <option value="4">销售培训</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- 底部按钮 -->
+                <div class="flex justify-end space-x-3 mt-8">
+                    <button id="reset-btn" class="py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white rounded-md transition duration-200">
+                        重新填写
+                    </button>
+                    <button id="save-btn" class="py-2 px-4 bg-secondary hover:bg-green-700 text-white rounded-md transition duration-200">
+                        保存
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 保存成功提示 -->
+        <div id="save-notification" class="hidden fixed top-4 right-4 bg-secondary text-white py-2 px-4 rounded-md shadow-lg">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span>已保存</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 选项卡切换功能
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除所有选项卡的active类
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.add('bg-gray-200');
+                });
+                
+                // 隐藏所有选项卡内容
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.add('hidden');
+                });
+                
+                // 激活当前选项卡
+                button.classList.add('active');
+                button.classList.remove('bg-gray-200');
+                
+                // 显示对应内容
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.remove('hidden');
+            });
+        });
+        
+        // 关闭模态框
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('modal-overlay').style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        document.getElementById('modal-overlay').addEventListener('click', (event) => {
+            if (event.target === document.getElementById('modal-overlay')) {
+                document.getElementById('modal-overlay').style.display = 'none';
+            }
+        });
+        
+        // 重新填写按钮
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            const activeTab = document.querySelector('.tab-btn.active');
+            const tabId = activeTab.getAttribute('data-tab');
+            document.getElementById(tabId).querySelector('form').reset();
+        });
+        
+        // 保存按钮
+        document.getElementById('save-btn').addEventListener('click', () => {
+            // 显示保存成功提示
+            const notification = document.getElementById('save-notification');
+            notification.classList.remove('hidden');
+            
+            // 3秒后隐藏提示
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+            
+            // 这里可以添加实际的保存逻辑
+        });
+        
+        // 初始打开模态框（此处仅为演示）
+        window.addEventListener('load', () => {
+            document.getElementById('modal-overlay').style.display = 'flex';
+        });
+    </script>
+</body>
+</html> 

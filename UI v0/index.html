@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预算管理系统</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 自定义配置 Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444',
+                        light: '#F3F4F6',
+                        dark: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <div class="flex h-screen overflow-hidden">
+        <!-- 侧边导航 -->
+        <aside class="w-64 bg-white shadow-md hidden md:block">
+            <div class="px-6 py-4 border-b">
+                <h1 class="text-xl font-bold text-primary">预算管理系统</h1>
+            </div>
+            <nav class="px-2 py-4">
+                <ul>
+                    <li class="mb-2">
+                        <a href="#" class="nav-link active" data-page="budget-targets">
+                            <i class="fas fa-bullseye mr-2"></i>预算目标
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="nav-link" data-page="budget-input">
+                            <i class="fas fa-edit mr-2"></i>预算填报
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="nav-link" data-page="budget-analysis">
+                            <i class="fas fa-chart-bar mr-2"></i>预算分析
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="nav-link" data-page="activity-management">
+                            <i class="fas fa-tasks mr-2"></i>作业管理
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="#" class="nav-link" data-page="budget-approval">
+                            <i class="fas fa-check-circle mr-2"></i>预算审批
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="px-6 py-4 mt-auto border-t">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+                        <span>用户</span>
+                    </div>
+                    <div class="ml-2">
+                        <p class="text-sm font-medium">部门负责人</p>
+                        <p class="text-xs text-gray-500">市场部</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- 顶部导航 -->
+            <header class="bg-white shadow-sm py-3 px-6 flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="mobile-menu-button" class="mr-4 text-gray-500 md:hidden">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 id="page-title" class="text-lg font-medium">预算目标</h2>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button class="text-gray-500">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="text-gray-500">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <button class="md:hidden text-gray-500">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 页面内容区 -->
+            <div id="content-container" class="p-6">
+                <iframe id="page-content" class="w-full h-[calc(100vh-4rem)]" frameborder="0"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <!-- 移动端导航菜单 -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="bg-white w-64 h-full overflow-y-auto">
+            <div class="px-6 py-4 border-b flex items-center justify-between">
+                <h1 class="text-xl font-bold text-primary">预算管理系统</h1>
+                <button id="close-mobile-menu" class="text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="px-4 py-4">
+                <ul>
+                    <li class="mb-3">
+                        <a href="#" class="mobile-nav-link active" data-page="budget-targets">
+                            <i class="fas fa-bullseye mr-2"></i>预算目标
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="mobile-nav-link" data-page="budget-input">
+                            <i class="fas fa-edit mr-2"></i>预算填报
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="mobile-nav-link" data-page="budget-analysis">
+                            <i class="fas fa-chart-bar mr-2"></i>预算分析
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="mobile-nav-link" data-page="activity-management">
+                            <i class="fas fa-tasks mr-2"></i>作业管理
+                        </a>
+                    </li>
+                    <li class="mb-3">
+                        <a href="#" class="mobile-nav-link" data-page="budget-approval">
+                            <i class="fas fa-check-circle mr-2"></i>预算审批
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="px-6 py-4 border-t">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+                        <span>用户</span>
+                    </div>
+                    <div class="ml-2">
+                        <p class="text-sm font-medium">部门负责人</p>
+                        <p class="text-xs text-gray-500">市场部</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html> 
